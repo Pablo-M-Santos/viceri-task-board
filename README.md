@@ -4,6 +4,8 @@ Aplicação web desenvolvida em React.js como solução para o Desafio Frontend 
 
 A aplicação simula um quadro Kanban, permitindo o gerenciamento visual de tarefas por status, inspirado em ferramentas como o Notion.
 
+<h4 align="center"><a href="https://viceri-task-board.vercel.app/">Clique para visitar o site</a></h4>
+
 ## 📌 Contexto do Desafio
 
 Na Viceri, os times trabalham em squads utilizando metodologias ágeis. Para garantir organização e visibilidade do trabalho, as tarefas precisam ser bem definidas e acompanhadas conforme seu status.
