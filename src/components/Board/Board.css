@@ -279,3 +279,10 @@
   border-radius: 999px;
 }
 
+.column {
+  transition: background-color 0.2s ease;
+}
+
+.column:hover {
+  outline: 2px dashed rgba(255, 255, 255, 0.3);
+}

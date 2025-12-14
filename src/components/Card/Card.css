@@ -1,15 +1,24 @@
 .card {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
   width: 100%;
-  min-height: 150px;
+  min-height: 160px;
+  max-height: 160px;
   padding: 1rem;
   background-color: #3c3c3c;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  transition: transform 0.2s;
 }
+
+.cardContent {
+  flex: 1;
+  overflow: hidden;
+}
+
+.cardContent p {
+  word-break: break-word;
+}
+
 
 .card:hover {
   transform: translateY(-2px);
@@ -23,11 +32,14 @@
   width: 100%;
 }
 
+
 .cardActions {
+  margin-top: auto;
   display: flex;
   gap: 0.5rem;
-  align-self: center; 
+  justify-content: center;
 }
+
 
 .card:hover {
   transform: translateY(-2px);

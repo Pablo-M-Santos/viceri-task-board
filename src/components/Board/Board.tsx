@@ -1,65 +1,68 @@
 import "./Board.css";
+
 import { MagnifyingGlass } from "phosphor-react";
-
 import { Card } from "../Card/Card";
-
-import { useState, type FormEvent, type ChangeEvent, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
-
-export interface StatusProps {
-  id: string;
-  name: string;
-}
-
-export interface TaskProps {
-  id: string;
-  content: string;
-  statusId: string;
-  isCompleted: boolean;
-}
-
-function normalizeStatusName(name: string) {
-  return name
-    .trim()
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
+import { useTasks } from "../../hooks/useTasks";
+import { useStatuses } from "../../hooks/useStatuses";
+import { generateColorFromString } from "../../utils/generateColorFromString";
+import { useState, type FormEvent, type ChangeEvent } from "react";
+import type { Task } from "../../types/board";
+import { CreateTaskModal } from "../modals/CreateTaskModal";
+import { EditTaskModal } from "../modals/EditTaskModal";
+import { TaskDetailModal } from "../modals/TaskDetailModal";
+import { DeleteTaskModal } from "../modals/DeleteTaskModal";
 
 export function Content() {
-  const [statuses, setStatuses] = useState<StatusProps[]>([
-    { id: "1", name: "A fazer" },
-    { id: "2", name: "Impedido" },
-    { id: "3", name: "Em desenvolvimento" },
-    { id: "4", name: "Em Merge requests" },
-    { id: "5", name: "Concluido" },
-  ]);
+  type ModalType = "create" | "edit" | "delete" | "detail" | null;
+
+  interface ModalState {
+    type: ModalType;
+    task: Task | null;
+  }
+
+  const [modal, setModal] = useState<ModalState>({
+    type: null,
+    task: null,
+  });
 
   const [statusName, setStatusName] = useState("A fazer");
-  const [selectedTask, setSelectedTask] = useState<TaskProps | null>(null);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [taskToDelete, setTaskToDelete] = useState<TaskProps | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [taskToEdit, setTaskToEdit] = useState<TaskProps | null>(null);
-
   const [searchTerm, setSearchTerm] = useState("");
+  const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const [newTask, setNewTask] = useState("");
+  const { tasks, createTask, updateTask, deleteTask, toggleTask } = useTasks();
+  const { statuses, getOrCreateStatus } = useStatuses();
+
+  function openCreateModal() {
+    setModal({ type: "create", task: null });
+  }
+
+  function openEditModal(task: Task) {
+    setTaskForm(task);
+    setModal({ type: "edit", task });
+  }
+
+  function openDeleteModal(task: Task) {
+    setModal({ type: "delete", task });
+  }
+
+  function openDetailModal(task: Task) {
+    setModal({ type: "detail", task });
+  }
+
+  function closeModal() {
+    setModal({ type: null, task: null });
+  }
 
   function handleSearchChange(event: ChangeEvent<HTMLInputElement>) {
     setSearchTerm(event.target.value);
   }
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tasks, setTasks] = useState<TaskProps[]>(() => {
-    const storageTasks = localStorage.getItem("@ToDoList:tasks");
-
-    if (storageTasks) {
-      return JSON.parse(storageTasks);
-    }
-
-    return [];
-  });
-  const [newTask, setNewTask] = useState("");
+  function setTaskForm(task: Task) {
+    setNewTask(task.content);
+    setStatusName(
+      statuses.find((s) => s.id === task.statusId)?.name || "A fazer"
+    );
+  }
 
   function handleCreateNewTask(event: FormEvent) {
     event.preventDefault();
@@ -74,32 +77,12 @@ export function Content() {
       return;
     }
 
-    const normalizedInput = normalizeStatusName(statusName);
+    const status = getOrCreateStatus(statusName);
 
-    let status = statuses.find(
-      (s) => normalizeStatusName(s.name) === normalizedInput
-    );
+    createTask(newTask, status.id);
 
-    if (!status) {
-      const newStatus: StatusProps = {
-        id: uuidv4(),
-        name: statusName.trim(),
-      };
-
-      setStatuses((prev) => [...prev, newStatus]);
-      status = newStatus;
-    }
-
-    const newCreatedTask: TaskProps = {
-      id: uuidv4(),
-      content: newTask,
-      statusId: status.id,
-      isCompleted: false,
-    };
-
-    setTasks((prev) => [...prev, newCreatedTask]);
     setNewTask("");
-    setIsModalOpen(false);
+    closeModal();
   }
 
   function handleNewTaskChange(event: ChangeEvent<HTMLInputElement>) {
@@ -107,86 +90,31 @@ export function Content() {
 
     setNewTask(event.target.value);
   }
-  function confirmDeleteTask(task: TaskProps) {
-    setTaskToDelete(task);
-    setIsDeleteModalOpen(true);
-  }
-
-  function openEditModal(task: TaskProps) {
-    setTaskToEdit(task);
-    setStatusName(statuses.find((s) => s.id === task.statusId)?.name || "");
-    setNewTask(task.content);
-    setIsEditModalOpen(true);
-  }
-
-  function handleConfirmDelete() {
-    if (taskToDelete) {
-      const filteredTasks = tasks.filter((t) => t.id !== taskToDelete.id);
-      setTasks(filteredTasks);
-      setTaskToDelete(null);
-      setIsDeleteModalOpen(false);
-    }
-  }
 
   function handleSaveEdit(event: FormEvent) {
     event.preventDefault();
-    if (!taskToEdit) return;
+
+    if (!modal.task) return;
 
     if (!newTask.trim()) {
       alert("Informe o nome da tarefa");
       return;
     }
 
-    const normalizedInput = normalizeStatusName(statusName);
-    let status = statuses.find(
-      (s) => normalizeStatusName(s.name) === normalizedInput
-    );
+    const status = getOrCreateStatus(statusName);
 
-    if (!status) {
-      const newStatus: StatusProps = { id: uuidv4(), name: statusName.trim() };
-      setStatuses((prev) => [...prev, newStatus]);
-      status = newStatus;
-    }
+    updateTask(modal.task.id, {
+      content: newTask,
+      statusId: status.id,
+    });
 
-    const updatedTasks = tasks.map((t) =>
-      t.id === taskToEdit.id
-        ? { ...t, content: newTask, statusId: status.id }
-        : t
-    );
-
-    setTasks(updatedTasks);
-    setIsEditModalOpen(false);
-    setTaskToEdit(null);
     setNewTask("");
-  }
-
-  function generateColorFromString(str: string) {
-    let hash = 0;
-    for (let i = 0; i < str.length; i++) {
-      hash = str.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const r = (hash >> 0) & 255;
-    const g = (hash >> 8) & 255;
-    const b = (hash >> 16) & 255;
-    return `${r}, ${g}, ${b}`;
+    closeModal();
   }
 
   function handleToggleTask(id: string) {
-    const updatedTask = tasks.map((task) =>
-      task.id === id
-        ? {
-            ...task,
-            isCompleted: !task.isCompleted,
-          }
-        : task
-    );
-
-    setTasks(updatedTask);
+    toggleTask(id);
   }
-
-  useEffect(() => {
-    localStorage.setItem("@ToDoList:tasks", JSON.stringify(tasks));
-  }, [tasks]);
 
   return (
     <div className="content">
@@ -202,137 +130,51 @@ export function Content() {
           />
         </div>
 
-        <button
-          className="button"
-          type="button"
-          onClick={() => setIsModalOpen(true)}
-        >
+        <button className="button" type="button" onClick={openCreateModal}>
           Criar Tarefa
         </button>
       </form>
 
-      {isModalOpen && (
-        <div className="modalOverlay">
-          <div className="modal">
-            <h2>Cadastrar tarefa</h2>
+      <CreateTaskModal
+        isOpen={modal.type === "create"}
+        statuses={statuses}
+        statusName={statusName}
+        taskName={newTask}
+        onChangeTask={handleNewTaskChange}
+        onChangeStatus={setStatusName}
+        onSubmit={handleCreateNewTask}
+        onClose={closeModal}
+      />
 
-            <form onSubmit={handleCreateNewTask}>
-              <input
-                type="text"
-                placeholder="Nome da tarefa"
-                value={newTask}
-                onChange={handleNewTaskChange}
-                required
-              />
+      <EditTaskModal
+        isOpen={modal.type === "edit"}
+        task={modal.task}
+        statuses={statuses}
+        taskName={newTask}
+        statusName={statusName}
+        onChangeTask={setNewTask}
+        onChangeStatus={setStatusName}
+        onSave={handleSaveEdit}
+        onClose={closeModal}
+      />
 
-              <input
-                list="status-options"
-                placeholder="Status da tarefa"
-                value={statusName}
-                onChange={(e) => setStatusName(e.target.value)}
-                required
-              />
+      <TaskDetailModal
+        isOpen={modal.type === "detail"}
+        task={modal.task}
+        statuses={statuses}
+        onClose={closeModal}
+      />
 
-              <datalist id="status-options">
-                {statuses.map((status) => (
-                  <option key={status.id} value={status.name} />
-                ))}
-              </datalist>
-
-              <div className="modalActions">
-                <button type="submit">Salvar</button>
-                <button type="button" onClick={() => setIsModalOpen(false)}>
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {isDetailModalOpen && selectedTask && (
-        <div className="modalOverlay">
-          <div className="modal">
-            <h2>Detalhes da Tarefa</h2>
-
-            <div className="modalDetailContent">
-              <p>
-                <strong>Conteúdo:</strong> {selectedTask.content}
-              </p>
-              <p>
-                <strong>Status:</strong>{" "}
-                {statuses.find((s) => s.id === selectedTask.statusId)?.name}
-              </p>
-            </div>
-
-            <div className="modalActions">
-              <button type="button" onClick={() => setIsDetailModalOpen(false)}>
-                Fechar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isDeleteModalOpen && taskToDelete && (
-        <div className="modalOverlay">
-          <div className="modal">
-            <h2>Excluir tarefa</h2>
-            <p className="modalDelete">
-              Tem certeza que deseja excluir a tarefa{" "}
-              <strong>{taskToDelete.content}</strong>?
-            </p>
-
-            <div className="modalActions">
-              <button type="button" onClick={handleConfirmDelete}>
-                Excluir
-              </button>
-              <button type="button" onClick={() => setIsDeleteModalOpen(false)}>
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {isEditModalOpen && taskToEdit && (
-        <div className="modalOverlay">
-          <div className="modal">
-            <h2>Editar Tarefa</h2>
-
-            <form onSubmit={handleSaveEdit}>
-              <input
-                type="text"
-                placeholder="Nome da tarefa"
-                value={newTask}
-                onChange={(e) => setNewTask(e.target.value)}
-                required
-              />
-
-              <input
-                list="status-options"
-                placeholder="Status da tarefa"
-                value={statusName}
-                onChange={(e) => setStatusName(e.target.value)}
-                required
-              />
-
-              <datalist id="status-options">
-                {statuses.map((status) => (
-                  <option key={status.id} value={status.name} />
-                ))}
-              </datalist>
-
-              <div className="modalActions">
-                <button type="submit">Salvar</button>
-                <button type="button" onClick={() => setIsEditModalOpen(false)}>
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <DeleteTaskModal
+        isOpen={modal.type === "delete"}
+        task={modal.task}
+        onConfirm={() => {
+          if (!modal.task) return;
+          deleteTask(modal.task.id);
+          closeModal();
+        }}
+        onCancel={closeModal}
+      />
 
       <div className="board">
         {statuses.map((status) => {
@@ -343,6 +185,13 @@ export function Content() {
               key={status.id}
               className="column"
               style={{ backgroundColor: `rgba(${color}, 0.061)` }}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={() => {
+                if (!draggedTask) return;
+
+                updateTask(draggedTask.id, { statusId: status.id });
+                setDraggedTask(null);
+              }}
             >
               <div className="columnHeader">
                 <h3
@@ -377,13 +226,11 @@ export function Content() {
                       key={task.id}
                       task={task}
                       bgColor={`rgba(${color}, 0.2)`}
-                      handleDeleteTask={() => confirmDeleteTask(task)}
                       handleToggleTask={() => handleToggleTask(task.id)}
+                      onDragStart={() => setDraggedTask(task)}
+                      handleDeleteTask={() => openDeleteModal(task)}
                       handleEditTask={() => openEditModal(task)}
-                      onClick={() => {
-                        setSelectedTask(task);
-                        setIsDetailModalOpen(true);
-                      }}
+                      onClick={() => openDetailModal(task)}
                     />
                   ))}
               </div>

@@ -1,14 +1,16 @@
 import "./Card.css";
 import { Trash, PencilSimple } from "phosphor-react";
-import type { TaskProps } from "../Board/Board";
 
-interface Task {
-  task: TaskProps;
+import type { Task } from "../../types/board";
+
+interface TaskProps {
+  task: Task;
   handleDeleteTask: () => void;
   handleToggleTask: () => void;
   onClick?: () => void;
   bgColor?: string;
   handleEditTask?: () => void;
+  onDragStart?: () => void;
 }
 
 export function Card({
@@ -18,10 +20,16 @@ export function Card({
   onClick,
   bgColor,
   handleEditTask,
-}: Task) {
+  onDragStart,
+}: TaskProps) {
   return (
     <div
       className="card"
+      draggable
+      onDragStart={(e) => {
+        e.stopPropagation();
+        onDragStart?.();
+      }}
       style={{ backgroundColor: bgColor || "var(--gray-400)" }}
       onClick={onClick}
     >
@@ -36,7 +44,9 @@ export function Card({
         />
       </label>
 
-      <p className={task.isCompleted ? "isCompleted" : ""}>{task.content}</p>
+      <div className="cardContent">
+        <p className={task.isCompleted ? "isCompleted" : ""}>{task.content}</p>
+      </div>
 
       <div className="cardActions">
         <button

@@ -34,13 +34,13 @@ Este projeto foi desenvolvido para permitir que desenvolvedores:
 
 - Uma nova tarefa pode ser criada informando:
 
-- Título da tarefa
+- Título da tarefa;
 
-- Status inicial;
+Status inicial;
 
 - As tarefas são exibidas em cards dentro da coluna correspondente;
 
-- O usuário pode:
+O usuário pode:
 
 - Visualizar detalhes da tarefa;
 
@@ -48,9 +48,12 @@ Este projeto foi desenvolvido para permitir que desenvolvedores:
 
 - Excluir tarefas;
 
-- As informações são salvas no Local Storage, garantindo persistência mesmo após recarregar a página.
+- Marcar tarefas como concluídas;
+
+- O usuário pode arrastar e soltar tarefas entre colunas para alterar seu status;
 
 ## 📋 Requisitos Funcionais (RF) e Regras de Negócio (RN)
+
 RF001 — Cadastrar Tarefa
 
 - Permite cadastrar uma nova tarefa informando título e status.
@@ -71,6 +74,35 @@ RF005 — Filtragem de Tarefas
 
 - Permite filtrar tarefas por texto nome.
 
+RF006 — Arrastar e Soltar Tarefas
+
+- Permite mover tarefas entre colunas utilizando drag and drop;
+
+- Ao soltar uma tarefa em outra coluna, seu status é automaticamente atualizado;
+
+- A alteração é persistida no Local Storage.
+
+## 🧲 Funcionalidade de Arrastar e Soltar (Drag and Drop)
+
+A aplicação permite reorganizar tarefas de forma intuitiva utilizando drag and drop nativo do HTML5.
+
+Funcionamento:
+
+- Cada card de tarefa é configurado como draggable;
+
+- Ao iniciar o arraste, a tarefa selecionada é armazenada no estado;
+
+- Cada coluna de status aceita o evento de onDrop;
+
+- Ao soltar o card em outra coluna:
+
+- O status da tarefa é atualizado;
+
+- O board é re-renderizado automaticamente;
+
+- A alteração é salva no Local Storage.
+
+Essa abordagem mantém a aplicação simples, performática e sem dependência de bibliotecas externas.
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -85,23 +117,50 @@ RF005 — Filtragem de Tarefas
 - Local Storage
 
 ## 📂 Estrutura do Projeto
+
 ```
 src
 ├── assets
 │   └── imagemFundo.png
+│
 ├── components
 │   ├── Header
 │   │   ├── Header.tsx
 │   │   └── Header.css
+│   │
 │   ├── Board
 │   │   ├── Board.tsx
 │   │   └── Board.css
-│   └── Card
-│       ├── TaskCard.tsx
-│       └── TaskCard.css
+│   │
+│   ├── Card
+│   │   ├── Card.tsx
+│   │   └── Card.css
+│   │
+│   └── modals
+│       ├── CreateTaskModal.tsx
+│       ├── EditTaskModal.tsx
+│       ├── TaskDetailModal.tsx
+│       └── DeleteTaskModal.tsx
+│
+├── hooks
+│   ├── useTasks.ts
+│   └── useStatuses.ts
+│
+├── types
+│   └── board.ts
+│
+├── utils
+│   ├── generateColorFromString.ts
+│   └── normalizeStatusName.ts
+│
 ├── App.tsx
 └── main.tsx
+
 ```
+
+## 📃 Documentação da Aplicação
+
+https://drive.google.com/file/d/1tOwm_i3pr-769ufajB3Zvp1niwC_dy5T/view?usp=sharing
 
 ## 🚀 Como Executar o Projeto
 
@@ -114,10 +173,10 @@ Certifique-se de ter instalado:
 ## ▶️ Passo a passo
 
 Clone o repositório:
+
 ```
 git clone https://github.com/seu-usuario/viceri-task-board.git
 ```
-
 
 Acesse a pasta do projeto:
 
@@ -133,7 +192,6 @@ npm install
 yarn install
 ```
 
-
 Inicie o servidor de desenvolvimento:
 
 ```
@@ -141,7 +199,6 @@ npm run dev
 # ou
 yarn dev
 ```
-
 
 A aplicação estará disponível em:
 
@@ -157,7 +214,7 @@ Não há necessidade de backend ou banco de dados;
 
 Os dados persistem mesmo após atualizar a página.
 
- ## 🎨 Decisões de Arquitetura e Design
+## 🎨 Decisões de Arquitetura e Design
 
 - Componentização para facilitar manutenção e escalabilidade;
 
@@ -171,17 +228,18 @@ Os dados persistem mesmo após atualizar a página.
 
 - Essas decisões foram tomadas visando clareza de código, organização e boa experiência do usuário.
 
-
 ## 📎 Considerações Finais
 
 Este projeto foi desenvolvido com foco em:
 
 - Boas práticas de frontend;
 
-- Código limpo e organizado;
+- Arquitetura organizada e escalável;
 
-- Interface intuitiva e moderna;
+- Separação clara de responsabilidades;
 
-- Facilidade de uso para times ágeis.
+- Interface inspirada em ferramentas modernas como Notion;
+
+- Experiência fluida para gerenciamento de tarefas em squads ágeis.
 
 Fico à disposição para esclarecer qualquer dúvida sobre a implementação ou decisões técnicas.
