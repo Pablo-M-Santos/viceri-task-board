@@ -1,73 +1,187 @@
-# React + TypeScript + Vite
+# 🗂️ Viceri Task Board — Desafio Frontend React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação web desenvolvida em React.js como solução para o Desafio Frontend da Viceri, com o objetivo de melhorar o processo de criação, organização e acompanhamento de tarefas em squads ágeis.
 
-Currently, two official plugins are available:
+A aplicação simula um quadro Kanban, permitindo o gerenciamento visual de tarefas por status, inspirado em ferramentas como o Notion.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 📌 Contexto do Desafio
 
-## React Compiler
+Na Viceri, os times trabalham em squads utilizando metodologias ágeis. Para garantir organização e visibilidade do trabalho, as tarefas precisam ser bem definidas e acompanhadas conforme seu status.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Este projeto foi desenvolvido para permitir que desenvolvedores:
 
-## Expanding the ESLint configuration
+- Cadastrem suas tarefas
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Organizem por status
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Acompanhem a evolução do trabalho de forma visual e intuitiva
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## ✅ Visão Geral da Solução
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- A solução consiste em uma aplicação frontend que oferece:
+
+- Quadro Kanban com colunas de status
+
+- Gerenciamento completo de tarefas (CRUD)
+
+- Persistência local dos dados
+
+- Interface moderna, responsiva e intuitiva
+
+## 🔄 Fluxo da Aplicação
+
+- O usuário acessa a aplicação e visualiza o board com os status disponíveis;
+
+- Uma nova tarefa pode ser criada informando:
+
+- Título da tarefa
+
+- Status inicial;
+
+- As tarefas são exibidas em cards dentro da coluna correspondente;
+
+- O usuário pode:
+
+- Visualizar detalhes da tarefa;
+
+- Editar informações;
+
+- Excluir tarefas;
+
+- As informações são salvas no Local Storage, garantindo persistência mesmo após recarregar a página.
+
+## 📋 Requisitos Funcionais (RF) e Regras de Negócio (RN)
+RF001 — Cadastrar Tarefa
+
+- Permite cadastrar uma nova tarefa informando título e status.
+
+RF002 — Editar Tarefa
+
+- Permite alterar o título e o status da tarefa.
+
+RF003 — Excluir Tarefa
+
+- Permite excluir uma tarefa mediante confirmação.
+
+RF004 — Listagem de Tarefas
+
+- Todas as tarefas são exibidas no board, organizadas por status.
+
+RF005 — Filtragem de Tarefas
+
+- Permite filtrar tarefas por texto nome.
+
+
+## 🛠️ Tecnologias Utilizadas
+
+- React.js
+
+- TypeScript
+
+- Vite
+
+- Phosphor Icons
+
+- Local Storage
+
+## 📂 Estrutura do Projeto
+```
+src
+├── assets
+│   └── imagemFundo.png
+├── components
+│   ├── Header
+│   │   ├── Header.tsx
+│   │   └── Header.css
+│   ├── Board
+│   │   ├── Board.tsx
+│   │   └── Board.css
+│   └── Card
+│       ├── TaskCard.tsx
+│       └── TaskCard.css
+├── App.tsx
+└── main.tsx
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🚀 Como Executar o Projeto
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Certifique-se de ter instalado:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Node.js (versão LTS recomendada)
+
+- npm ou yarn
+
+## ▶️ Passo a passo
+
+Clone o repositório:
 ```
+git clone https://github.com/seu-usuario/viceri-task-board.git
+```
+
+
+Acesse a pasta do projeto:
+
+```
+cd viceri-task-board
+```
+
+Instale as dependências:
+
+```
+npm install
+# ou
+yarn install
+```
+
+
+Inicie o servidor de desenvolvimento:
+
+```
+npm run dev
+# ou
+yarn dev
+```
+
+
+A aplicação estará disponível em:
+
+```
+http://localhost:5173
+```
+
+## 💾 Armazenamento de Dados
+
+As tarefas são armazenadas no Local Storage do navegador;
+
+Não há necessidade de backend ou banco de dados;
+
+Os dados persistem mesmo após atualizar a página.
+
+ ## 🎨 Decisões de Arquitetura e Design
+
+- Componentização para facilitar manutenção e escalabilidade;
+
+- Separação de responsabilidades (Header, Board, Card);
+
+- CSS Modules para evitar conflitos de estilos;
+
+- Interface inspirada em Kanban, priorizando usabilidade;
+
+- Estados controlados no React, sem dependência externa de gerenciamento de estado.
+
+- Essas decisões foram tomadas visando clareza de código, organização e boa experiência do usuário.
+
+
+## 📎 Considerações Finais
+
+Este projeto foi desenvolvido com foco em:
+
+- Boas práticas de frontend;
+
+- Código limpo e organizado;
+
+- Interface intuitiva e moderna;
+
+- Facilidade de uso para times ágeis.
+
+Fico à disposição para esclarecer qualquer dúvida sobre a implementação ou decisões técnicas.
