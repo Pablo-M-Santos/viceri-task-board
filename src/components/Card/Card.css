@@ -1,0 +1,157 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  width: 100%;
+  min-height: 150px;
+  padding: 1rem;
+  background-color: #3c3c3c;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.card p {
+  text-align: left; 
+  margin: 0.5rem 0;
+  flex: 1;
+  color: #fff;
+  width: 100%;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  align-self: center; 
+}
+
+.card:hover {
+  transform: translateY(-2px);
+}
+
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.isCompleted {
+  text-decoration: line-through;
+  color: var(--gray-300);
+}
+
+button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+
+.cardActions button {
+  background: none;
+  border: none;
+  color: var(--gray-300);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardActions button:hover {
+  color: var(--danger);
+}
+
+.card svg {
+  vertical-align: middle;
+}
+
+.card button {
+  background: none;
+  border: none;
+  color: var(--gray-300);
+  cursor: pointer;
+}
+
+.card button:hover {
+  color: var(--danger);
+}
+
+.isCompleted {
+  color: var(--gray-300);
+  text-decoration: line-through;
+}
+
+.container {
+  display: block;
+  position: relative;
+  padding-left: 1.8rem;
+  margin-bottom: 1.2rem;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: -2px;
+  left: 0;
+  height: 16px;
+  width: 16px;
+  background-color: var(--gray-500);
+  border-radius: 50%;
+  outline: 1px solid var(--blue);
+  vertical-align: middle;
+  align-self: center;
+}
+.container:hover input ~ .checkmark {
+  background-color: hsla(202, 69%, 37%, 0.2);
+  outline: 1px solid var(--blue-dark);
+}
+
+.container input:checked ~ .checkmark {
+  background-color: var(--purple-dark);
+  outline: 1px solid var(--purple-dark);
+}
+
+.container:hover input:checked ~ .checkmark {
+  background-color: var(--purple);
+  outline: 1px solid var(--purple);
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.container .checkmark:after {
+  left: 6px;
+  top: 3px;
+  width: 3px;
+  height: 6px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+
