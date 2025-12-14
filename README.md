@@ -175,7 +175,7 @@ Certifique-se de ter instalado:
 Clone o repositório:
 
 ```
-git clone https://github.com/seu-usuario/viceri-task-board.git
+git clone https://github.com/Pablo-M-Santos/viceri-task-board.git
 ```
 
 Acesse a pasta do projeto:
